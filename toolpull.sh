@@ -73,6 +73,7 @@ wait_docker_installation() {
 }
 
 main() {
+    update_system
     require_sudo
     (install_owasp_zap && install_ffuf && install_docker) &
     install_caido
