@@ -33,7 +33,7 @@ install_docker() {
     if command -v docker &> /dev/null; then
         echo "[ ] Docker is already installed."
     else
-        echo "Docker not found. Attempting to install..."
+        echo "Installing Docker..."
         curl -fsSL https://get.docker.com -o get-docker.sh
         sh get-docker.sh &> /dev/null
         command -v docker &> /dev/null && echo "[+] Docker is ready" || { echo "Error: Docker installation failed."; exit 1; }
