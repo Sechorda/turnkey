@@ -8,7 +8,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # - Quick update
-echo "Pulling toolS!"
+echo "Pulling tools!..."
 sudo apt update &> /dev/null
 sudo apt upgrade &> /dev/null
 
@@ -16,7 +16,7 @@ sudo apt upgrade &> /dev/null
 
 curl -OL /usr/local https://golang.org/dl/go1.16.7.linux-amd64.tar.gz &> /dev/null
 tar -C /usr/local -xvf go1.16.7.linux-amd64.tar.gz &> /dev/null
-git clone https://github.com/ffuf/ffuf ; cd ffuf ; go get ; go build &> /dev/null
+git clone https://github.com/ffuf/ffuf &> /dev/null ; cd ffuf ; go get &> /dev/null; go build &> /dev/null
 
 
 # Check if docker command is available
@@ -28,7 +28,7 @@ else
 
     # - Stage Docker
     curl -fsSL https://get.docker.com -o get-docker.sh
-    sh get-docker.sh
+    sh get-docker.sh &> /dev/null
     rm ./get-docker.sh
 
     # Check if installation was successful
@@ -45,8 +45,8 @@ fi
 apt install default-jre
 echo 'deb http://download.opensuse.org/repositories/home:/cabelo/xUbuntu_22.10/ /' | sudo tee /etc/apt/sources.list.d/home:cabelo.list
 curl -fsSL https://download.opensuse.org/repositories/home:cabelo/xUbuntu_22.10/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/home_cabelo.gpg > /dev/null
-apt update
-apt install owasp-zap
+apt update &> /dev/null
+apt install owasp-zap &> /dev/null
 
 docker pull caido/caido
 
