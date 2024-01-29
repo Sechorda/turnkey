@@ -15,7 +15,7 @@ sudo apt upgrade -y &> /dev/null
 # We need GO to Fuzz Faster U Fool (FFUF)
 
 sudo apt install -y golang-go && cd /usr/local/go/bin
-go install github.com/ffuf/ffuf@latest
+go install github.com/ffuf/ffuf/v2@latest
 
 # Check if docker command is available
 if command -v docker &> /dev/null; then
