@@ -42,13 +42,14 @@ fi
 
 
 # - OWASP ZAP 
-apt install default-jre
-echo 'deb http://download.opensuse.org/repositories/home:/cabelo/xUbuntu_22.10/ /' | sudo tee /etc/apt/sources.list.d/home:cabelo.list
+apt install default-jre &> /dev/null
+echo 'deb http://download.opensuse.org/repositories/home:/cabelo/xUbuntu_22.10/ /' | sudo tee /etc/apt/sources.list.d/home:cabelo.list &> /dev/null
 curl -fsSL https://download.opensuse.org/repositories/home:cabelo/xUbuntu_22.10/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/home_cabelo.gpg > /dev/null
 apt update &> /dev/null
 apt install owasp-zap &> /dev/null
 
-docker pull caido/caido
+# CAIDO INSTALL
+docker pull caido/caido &> /dev/null
 
 # Check if caido/caido container is running
 CAIDO_CONTAINER_NAME="caido"
