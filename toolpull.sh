@@ -67,9 +67,7 @@ install_caido() {
 main() {
     require_sudo
     update_system
-    install_ffuf
-    install_owasp_zap
-    install_docker
+    (install_ffuf && install_owasp_zap && install_docker) &
     install_caido
     echo "Elapsed Time (using \$SECONDS): $SECONDS seconds"
 }
