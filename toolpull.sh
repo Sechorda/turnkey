@@ -10,7 +10,7 @@ fi
 # - Quick update
 echo "Pulling tools!..."
 sudo apt update &> /dev/null
-sudo apt upgrade -y &> /dev/null
+sudo apt upgrade -y > /dev/null 2>&1
 
 # We need GO to Fuzz Faster U Fool (FFUF)
 
