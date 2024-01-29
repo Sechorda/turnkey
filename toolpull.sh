@@ -1,5 +1,5 @@
 #!/bin/bash
-SECONDS=0
+
 require_sudo() {
     [ "$EUID" -eq 0 ] || { echo "Please run this script with sudo."; exit 1; }
 }
@@ -71,7 +71,6 @@ main() {
     install_ffuf
     install_docker
     install_caido
-    echo "Elapsed Time (using \$SECONDS): $SECONDS seconds"
 }
 
 main
