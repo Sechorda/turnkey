@@ -1,7 +1,5 @@
 #!/bin/bash
-
 SECONDS=0
-
 require_sudo() {
     [ "$EUID" -eq 0 ] || { echo "Please run this script with sudo."; exit 1; }
 }
@@ -14,8 +12,8 @@ update_system() {
 
 install_ffuf() {
     echo "Installing FFUF..."
-    sudo apt install -y golang-go
-    go install github.com/ffuf/ffuf/v2@latest
+    sudo apt install -y golang-go &> /dev/null
+    cd ~ && go install github.com/ffuf/ffuf/v2@latest &> /dev/null
     sudo mv ~/go/bin/ffuf /usr/bin
     rm -rf ~/go
     echo "[+] FFUF is ready"
