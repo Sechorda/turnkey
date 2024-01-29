@@ -12,6 +12,13 @@ echo "Pulling toolS!"
 sudo apt update &> /dev/null
 sudo apt upgrade &> /dev/null
 
+# We need GO to Fuzz Faster U Fool (FFUF)
+
+curl -OL /usr/local https://golang.org/dl/go1.16.7.linux-amd64.tar.gz &> /dev/null
+tar -C /usr/local -xvf go1.16.7.linux-amd64.tar.gz &> /dev/null
+git clone https://github.com/ffuf/ffuf ; cd ffuf ; go get ; go build &> /dev/null
+
+
 # Check if docker command is available
 if command -v docker &> /dev/null; then
     echo "Docker is already installed."
