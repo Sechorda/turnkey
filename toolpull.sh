@@ -41,7 +41,6 @@ install_docker() {
 }
 
 install_caido() {
-    wait_docker_installation
     echo "Containzerizing Caido..."
     docker pull caido/caido &> /dev/null
 
@@ -65,19 +64,12 @@ install_caido() {
     fi
 }
 
-wait_docker_installation() {
-    # Wait until docker installation is finished
-    while ! command -v docker &> /dev/null; do
-        sleep 1
-    done
-}
-
 main() {
-    update_system
     require_sudo
-    (install_owasp_zap && install_ffuf && install_docker) &
+    update_system
+    (install_owasp_zap && install_ffuf) &
+    install_docker
     install_caido
-    wait  # Wait for background tasks to finish
     echo "Elapsed Time (using \$SECONDS): $SECONDS seconds"
 }
 
