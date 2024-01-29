@@ -1,6 +1,8 @@
 # This script is to pull down a toolkit
 #!/bin/bash
 
+SECONDS=0
+
 # Check if script is run with sudo
 if [ "$EUID" -ne 0 ]; then
     echo "Please run this script with sudo."
@@ -13,21 +15,28 @@ sudo apt update &> /dev/null
 sudo apt upgrade -y > /dev/null 2>&1
 
 # We need GO to Fuzz Faster U Fool (FFUF)
+echo "Installing FFUF..."
+sudo apt install -y golang-go
+cd ~ && go install github.com/ffuf/ffuf/v2@latest
+mv ~/go/bin/ffuf /usr/bin
+rm go -rf
+echo "[+] FFUF is ready"
 
-sudo apt install -y golang-go && cd /usr/bin/
-go install github.com/ffuf/ffuf/v2@latest
 
 # - OWASP ZAP 
+echo "Installing OWASP ZAP..."
 apt install default-jre &> /dev/null
 echo 'deb http://download.opensuse.org/repositories/home:/cabelo/xUbuntu_22.10/ /' | sudo tee /etc/apt/sources.list.d/home:cabelo.list &> /dev/null
 curl -fsSL https://download.opensuse.org/repositories/home:cabelo/xUbuntu_22.10/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/home_cabelo.gpg > /dev/null
 apt update &> /dev/null
 apt install owasp-zap &> /dev/null
+echo "[+] OWASP-ZAP is ready"
+
 
 # Check if docker is installed
 if command -v docker &> /dev/null; then
     # Docker found, no need to install
-    echo "Docker is already installed."
+    echo "[ ] Docker is already installed."
 else
     # Docker not found, attempt installation
     echo "Docker not found. Attempting to install..."
@@ -38,7 +47,7 @@ else
 
     # Check if installation was successful
     if command -v docker &> /dev/null; then
-        echo "Docker installed successfully."
+        echo "[+] Docker is ready"
     else
         echo "Error: Docker installation failed."
         exit 1
@@ -47,6 +56,7 @@ fi
 
 
 # CAIDO INSTALL
+echo "Containzerizing Caido..."
 docker pull caido/caido &> /dev/null
 
 # Check if caido/caido container is running
@@ -67,9 +77,11 @@ else
     if docker ps | grep -q $CAIDO_CONTAINER_NAME; then
         # Get the container port mapping
         CAIDO_CONTAINER_PORT=$(docker port $CAIDO_CONTAINER_NAME 8080 | cut -d':' -f2)
-        echo "Container $CAIDO_CONTAINER_NAME is now running on port $CAIDO_CONTAINER_PORT"
+        echo "[+] $CAIDO_CONTAINER_NAME is now ready on port $CAIDO_CONTAINER_PORT"
     else
         echo "Error: Failed to start container $CAIDO_CONTAINER_NAME."
         exit 1
     fi
 fi
+
+echo "Elapsed Time (using \$SECONDS): $SECONDS seconds"
