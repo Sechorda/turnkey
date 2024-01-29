@@ -1,87 +1,79 @@
-# This script is to pull down a toolkit
 #!/bin/bash
 
 SECONDS=0
 
-# Check if script is run with sudo
-if [ "$EUID" -ne 0 ]; then
-    echo "Please run this script with sudo."
-    exit 1
-fi
+require_sudo() {
+    [ "$EUID" -eq 0 ] || { echo "Please run this script with sudo."; exit 1; }
+}
 
-# - Quick update
-echo "Pulling tools!..."
-sudo apt update &> /dev/null
-sudo apt upgrade -y > /dev/null 2>&1
+update_system() {
+    echo "Pulling tools!..."
+    sudo apt update &> /dev/null
+    sudo apt upgrade -y > /dev/null 2>&1
+}
 
-# We need GO to Fuzz Faster U Fool (FFUF)
-echo "Installing FFUF..."
-sudo apt install -y golang-go
-cd ~ && go install github.com/ffuf/ffuf/v2@latest
-mv ~/go/bin/ffuf /usr/bin
-rm go -rf
-echo "[+] FFUF is ready"
+install_ffuf() {
+    echo "Installing FFUF..."
+    sudo apt install -y golang-go
+    go install github.com/ffuf/ffuf/v2@latest
+    sudo mv ~/go/bin/ffuf /usr/bin
+    rm -rf ~/go
+    echo "[+] FFUF is ready"
+}
 
+install_owasp_zap() {
+    echo "Installing OWASP ZAP..."
+    sudo apt install -y default-jre &> /dev/null
+    sudo tee /etc/apt/sources.list.d/home:cabelo.list <<< 'deb http://download.opensuse.org/repositories/home:/cabelo/xUbuntu_22.10/ /' &> /dev/null
+    curl -fsSL https://download.opensuse.org/repositories/home:cabelo/xUbuntu_22.10/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/home_cabelo.gpg > /dev/null
+    sudo apt update &> /dev/null
+    sudo apt install -y owasp-zap &> /dev/null
+    echo "[+] OWASP-ZAP is ready"
+}
 
-# - OWASP ZAP 
-echo "Installing OWASP ZAP..."
-apt install default-jre &> /dev/null
-echo 'deb http://download.opensuse.org/repositories/home:/cabelo/xUbuntu_22.10/ /' | sudo tee /etc/apt/sources.list.d/home:cabelo.list &> /dev/null
-curl -fsSL https://download.opensuse.org/repositories/home:cabelo/xUbuntu_22.10/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/home_cabelo.gpg > /dev/null
-apt update &> /dev/null
-apt install owasp-zap &> /dev/null
-echo "[+] OWASP-ZAP is ready"
-
-
-# Check if docker is installed
-if command -v docker &> /dev/null; then
-    # Docker found, no need to install
-    echo "[ ] Docker is already installed."
-else
-    # Docker not found, attempt installation
-    echo "Docker not found. Attempting to install..."
-    
-    # - Docker install
-    curl -fsSL https://get.docker.com -o get-docker.sh
-    sh get-docker.sh &> /dev/null
-
-    # Check if installation was successful
+install_docker() {
     if command -v docker &> /dev/null; then
-        echo "[+] Docker is ready"
+        echo "[ ] Docker is already installed."
     else
-        echo "Error: Docker installation failed."
-        exit 1
+        echo "Docker not found. Attempting to install..."
+        curl -fsSL https://get.docker.com -o get-docker.sh
+        sh get-docker.sh &> /dev/null
+        command -v docker &> /dev/null && echo "[+] Docker is ready" || { echo "Error: Docker installation failed."; exit 1; }
     fi
-fi
+}
 
+install_caido() {
+    echo "Containzerizing Caido..."
+    docker pull caido/caido &> /dev/null
 
-# CAIDO INSTALL
-echo "Containzerizing Caido..."
-docker pull caido/caido &> /dev/null
+    CAIDO_CONTAINER_NAME="caido"
+    CAIDO_IMAGE_NAME="caido/caido:latest"
+    CAIDO_HOST_PORT=7000
 
-# Check if caido/caido container is running
-CAIDO_CONTAINER_NAME="caido"
-CAIDO_IMAGE_NAME="caido/caido:latest"
-CAIDO_HOST_PORT=7000
-
-# Check if the container is already running
-if docker ps | grep -q $CAIDO_CONTAINER_NAME; then
-    # Get the container port mapping
-    CAIDO_CONTAINER_PORT=$(docker port $CAIDO_CONTAINER_NAME 8080 | cut -d':' -f2)
-    echo "Container $CAIDO_CONTAINER_NAME is already running on port $CAIDO_CONTAINER_PORT"
-else
-    # Run the Docker container in the background
-    docker run -d --rm -p $CAIDO_HOST_PORT:8080 --name $CAIDO_CONTAINER_NAME $CAIDO_IMAGE_NAME
-
-    # Check if the container is running after attempting to start it
     if docker ps | grep -q $CAIDO_CONTAINER_NAME; then
-        # Get the container port mapping
         CAIDO_CONTAINER_PORT=$(docker port $CAIDO_CONTAINER_NAME 8080 | cut -d':' -f2)
-        echo "[+] $CAIDO_CONTAINER_NAME is now ready on port $CAIDO_CONTAINER_PORT"
+        echo "Container $CAIDO_CONTAINER_NAME is already running on port $CAIDO_CONTAINER_PORT"
     else
-        echo "Error: Failed to start container $CAIDO_CONTAINER_NAME."
-        exit 1
-    fi
-fi
+        docker run -d --rm -p $CAIDO_HOST_PORT:8080 --name $CAIDO_CONTAINER_NAME $CAIDO_IMAGE_NAME &> /dev/null
 
-echo "Elapsed Time (using \$SECONDS): $SECONDS seconds"
+        if docker ps | grep -q $CAIDO_CONTAINER_NAME; then
+            CAIDO_CONTAINER_PORT=$(docker port $CAIDO_CONTAINER_NAME 8080 | cut -d':' -f2)
+            echo "[+] $CAIDO_CONTAINER_NAME is now ready on port $CAIDO_CONTAINER_PORT"
+        else
+            echo "Error: Failed to start container $CAIDO_CONTAINER_NAME."
+            exit 1
+        fi
+    fi
+}
+
+main() {
+    require_sudo
+    update_system
+    install_ffuf
+    install_owasp_zap
+    install_docker
+    install_caido
+    echo "Elapsed Time (using \$SECONDS): $SECONDS seconds"
+}
+
+main
