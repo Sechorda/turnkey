@@ -14,18 +14,27 @@ sudo apt upgrade -y > /dev/null 2>&1
 
 # We need GO to Fuzz Faster U Fool (FFUF)
 
-sudo apt install -y golang-go && cd /usr/local/go/bin
+sudo apt install -y golang-go && cd /usr/bin/
 go install github.com/ffuf/ffuf/v2@latest
 
-# Check if docker command is available
+# - OWASP ZAP 
+apt install default-jre &> /dev/null
+echo 'deb http://download.opensuse.org/repositories/home:/cabelo/xUbuntu_22.10/ /' | sudo tee /etc/apt/sources.list.d/home:cabelo.list &> /dev/null
+curl -fsSL https://download.opensuse.org/repositories/home:cabelo/xUbuntu_22.10/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/home_cabelo.gpg > /dev/null
+apt update &> /dev/null
+apt install owasp-zap &> /dev/null
+
+# Check if docker is installed
 if command -v docker &> /dev/null; then
+    # Docker found, no need to install
+    echo "Docker is already installed."
+else
     # Docker not found, attempt installation
     echo "Docker not found. Attempting to install..."
-
-    # - Stage Docker
+    
+    # - Docker install
     curl -fsSL https://get.docker.com -o get-docker.sh
     sh get-docker.sh &> /dev/null
-    rm ./get-docker.sh
 
     # Check if installation was successful
     if command -v docker &> /dev/null; then
@@ -36,13 +45,6 @@ if command -v docker &> /dev/null; then
     fi
 fi
 
-
-# - OWASP ZAP 
-apt install default-jre &> /dev/null
-echo 'deb http://download.opensuse.org/repositories/home:/cabelo/xUbuntu_22.10/ /' | sudo tee /etc/apt/sources.list.d/home:cabelo.list &> /dev/null
-curl -fsSL https://download.opensuse.org/repositories/home:cabelo/xUbuntu_22.10/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/home_cabelo.gpg > /dev/null
-apt update &> /dev/null
-apt install owasp-zap &> /dev/null
 
 # CAIDO INSTALL
 docker pull caido/caido &> /dev/null
