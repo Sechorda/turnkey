@@ -2,8 +2,8 @@
 #!/bin/bash
 
 # -
-sudo apt update
-sudo apt upgrade
+sudo apt update &> /dev/null
+sudo apt upgrade &> /dev/null
 
 # Check if docker command is available
 if command -v docker &> /dev/null; then
