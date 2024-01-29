@@ -1,7 +1,14 @@
 # This script is to pull down a toolkit
 #!/bin/bash
 
-# -
+# Check if script is run with sudo
+if [ "$EUID" -ne 0 ]; then
+    echo "Please run this script with sudo."
+    exit 1
+fi
+
+# - Quick update
+echo "Pulling toolS!"
 sudo apt update &> /dev/null
 sudo apt upgrade &> /dev/null
 
@@ -28,10 +35,11 @@ fi
 
 
 # - OWASP ZAP 
+apt install default-jre
 echo 'deb http://download.opensuse.org/repositories/home:/cabelo/xUbuntu_22.10/ /' | sudo tee /etc/apt/sources.list.d/home:cabelo.list
 curl -fsSL https://download.opensuse.org/repositories/home:cabelo/xUbuntu_22.10/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/home_cabelo.gpg > /dev/null
-sudo apt update
-sudo apt install owasp-zap
+apt update
+apt install owasp-zap
 
 docker pull caido/caido
 
