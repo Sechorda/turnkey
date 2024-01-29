@@ -16,7 +16,7 @@ sudo apt upgrade &> /dev/null
 
 curl -OL /usr/local https://golang.org/dl/go1.16.7.linux-amd64.tar.gz &> /dev/null
 tar -C /usr/local -xvf go1.16.7.linux-amd64.tar.gz &> /dev/null
-git clone https://github.com/ffuf/ffuf /usr/bin/ffuf &> /dev/null ; cd /usr/bin/ffuf ; go get &> /dev/null; go build &> /dev/null
+git clone https://github.com/ffuf/ffuf /usr/local/go/bin/fuff &> /dev/null ; cd /usr/local/go/bin/fuff ; go get &> /dev/null; go build &> /dev/null
 export PATH=$PATH:/usr/local/go/bin
 
 # Check if docker command is available
