@@ -10,7 +10,7 @@ update_system() {
     sudo apt upgrade -y > /dev/null 2>&1
 }
 
-download_files() {
+download_APIwordlist() {
     if ! command -v wget &> /dev/null; then
         sudo apt install wget
     fi
