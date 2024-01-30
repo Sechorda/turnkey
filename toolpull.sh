@@ -19,7 +19,7 @@ download_APIwordlist() {
 
     # Specify the URLs of the files you want to download
     file_urls=(
-        "https://github.com/danielmiessler/SecLists/tree/master/Discovery/Web-Content/https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/common-api-endpoints-mazen160.txt"
+        "https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/common-api-endpoints-mazen160.txt"
         "https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/api/api-seen-in-wild.txt"
         "https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/api/api-endpoints.txt"
         "https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/api/actions.txt"
