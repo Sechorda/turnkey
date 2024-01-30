@@ -10,6 +10,30 @@ update_system() {
     sudo apt upgrade -y > /dev/null 2>&1
 }
 
+download_files() {
+    if ! command -v wget &> /dev/null; then
+        sudo apt install wget
+    fi
+
+    mkdir -p sechordlist
+
+    # Specify the URLs of the files you want to download
+    file_urls=(
+        "https://github.com/danielmiessler/SecLists/tree/master/Discovery/Web-Content/https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/common-api-endpoints-mazen160.txt"
+        "https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/api/api-seen-in-wild.txt"
+        "https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/api/api-endpoints.txt"
+        "https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/api/actions.txt"
+        "https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/burp-parameter-names.txt"
+    )
+    
+    # Loop through the URLs and download each file
+    for url in "${file_urls[@]}"; do
+        filename=$(basename "$url")
+        wget -c "$url" -O "sechordlist/$filename" &> /dev/null
+    done
+    echo "[+] API wordlists downloaded and stored in sechordlist folder."
+}
+
 install_ffuf() {
     echo "Installing FFUF..."
     sudo apt install -y golang-go &> /dev/null
