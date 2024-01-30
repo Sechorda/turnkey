@@ -91,6 +91,7 @@ install_caido() {
 main() {
     require_sudo
     update_system
+    download_files
     install_owasp_zap 
     install_ffuf
     install_docker
