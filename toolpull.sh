@@ -43,14 +43,13 @@ install_ffuf() {
     echo "[+] FFUF is ready"
 }
 
-install_owasp_zap() {
-    echo "Installing OWASP ZAP..."
-    sudo apt install -y default-jre &> /dev/null
-    sudo tee /etc/apt/sources.list.d/home:cabelo.list <<< 'deb http://download.opensuse.org/repositories/home:/cabelo/xUbuntu_22.10/ /' &> /dev/null
-    curl -fsSL https://download.opensuse.org/repositories/home:cabelo/xUbuntu_22.10/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/home_cabelo.gpg > /dev/null
-    sudo apt update &> /dev/null
-    sudo apt install -y owasp-zap &> /dev/null
-    echo "[+] OWASP-ZAP is ready"
+install_gospider() {
+    echo "Installing gospider..."
+    sudo apt install -y golang-go &> /dev/null
+    go install github.com/jaeles-project/gospider@latest &> /dev/null
+    sudo mv ~/go/bin/gospider /usr/bin
+    rm -rf ~/go
+    echo "[+] gospider is ready"
 }
 
 install_docker() {
@@ -92,7 +91,7 @@ main() {
     require_sudo
     update_system
     download_APIwordlist
-    install_owasp_zap 
+    install_gospider 
     install_ffuf
     install_docker
     install_caido
